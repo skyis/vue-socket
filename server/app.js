@@ -1,14 +1,14 @@
 
 import SocketIO from 'socket.io';
 import fs from 'fs';
-import http from 'http';
-// import https from 'https';
+// import http from 'http';
+import https from 'https';
 
-// const options = {
-//   key: fs.readFileSync().toString(),
-//   cert: fs.readFileSync().toString(),
-//   ca: fs.readFileSync().toString(),
-// }
+const options = {
+  key: fs.readFileSync(`${__dirname}/hogehoge.com-private.pem`).toString(),
+  cert: fs.readFileSync(`${__dirname}/hogehoge.com-server.cer`).toString(),
+  ca: fs.readFileSync(`${__dirname}/hogehoge.com-ca.cer`).toString(),
+}
 function handler(req, res) {
   fs.readFile(`${__dirname}/index.html`, (err, data) => {
     if (err) {
@@ -20,7 +20,7 @@ function handler(req, res) {
   });
 }
 
-const app = http.createServer(handler);
+const app = https.createServer(options, handler);
 const io = new SocketIO(app);
 app.listen(8080);
 
