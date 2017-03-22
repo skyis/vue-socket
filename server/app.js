@@ -1,14 +1,16 @@
 
 import SocketIO from 'socket.io';
 import fs from 'fs';
-// import http from 'http';
+import http from 'http';
 import https from 'https';
 
+const isSecure = false;
 const options = {
   key: fs.readFileSync(`${__dirname}/hogehoge.com-private.pem`).toString(),
   cert: fs.readFileSync(`${__dirname}/hogehoge.com-server.cer`).toString(),
   ca: fs.readFileSync(`${__dirname}/hogehoge.com-ca.cer`).toString(),
-}
+};
+
 function handler(req, res) {
   fs.readFile(`${__dirname}/index.html`, (err, data) => {
     if (err) {
@@ -19,8 +21,12 @@ function handler(req, res) {
     return res.end(data);
   });
 }
-
-const app = https.createServer(options, handler);
+let app = null;
+if (isSecure) {
+  app = https.createServer(options, handler);
+} else {
+  app = http.createServer(handler);
+}
 const io = new SocketIO(app);
 app.listen(8080);
 
